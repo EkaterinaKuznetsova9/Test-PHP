@@ -1,0 +1,67 @@
+mysql> #Создаем базу данных Library, в которой будет три таблицы : Books, Authors и BooksAuthors (главная). Заполняем таблицы своими 
+данными.
+
+mysql> create database Library;
+mysql> use Library;
+
+mysql> create table Books(ID INT not null auto_increment, NameBook VARCHAR(45), primary key(ID));
+mysql> insert into Books values(null, "Милый друг");
+mysql> insert into Books values(null, "Унесённые ветром");
+mysql> insert into Books values(null, "Двенадцать стульев");
+mysql> insert into Books values(null, "Мать");
+mysql> insert into Books values(null, "Дубровский");
+mysql> insert into Books values(null, "Пиковая дама");
+mysql> insert into Books values(null, "Капитанская дочка");
+mysql> insert into Books values(null, "Вишневый сад");
+mysql> insert into Books values(null, "Жизнь ненужного человека");
+mysql> insert into Books values(null, "На дне");
+mysql> insert into Books values(null, "Дети солнца");
+mysql> insert into Books values(null, "Фальшивая монета");
+mysql> insert into Books values(null, "Дачники");
+mysql> insert into Books values(null, "Челкаш");
+mysql> insert into Books values(null, "Старуха Изергиль);
+mysql> insert into Books values(null, "Исповедь");
+mysql> insert into Books values(null, "Повести покойного Ивана Петровича Белкина");
+mysql> insert into Books values(null, "Арап Петра Великого ");
+mysql> insert into Books values(null, "Сказка о рыбаке и рыбке");
+mysql> insert into Books values(null, "Сказка о мёртвой царевне и семи богатырях");
+
+mysql> create table Authors(ID INT not null auto_increment, Author VARCHAR(35), primary key(ID));
+mysql> insert into Authors values(null, "Пушкин А. С.");
+mysql> insert into Authors values(null, "Горький М.");
+mysql> insert into Authors values(null, "Ильф И.");
+mysql> insert into Authors values(null, "Петров Е.");
+mysql> insert into Authors values(null, "Митчелл Маргарет");
+mysql> insert into Authors values(null, "Чехов А.П.");
+mysql> insert into Authors values(null, "Мопассан Ги де");
+
+mysql> create table BooksAuthors(Number INT not null auto_increment, ID_Books INT, ID_Authors INT, primary key(Number), 
+foreign key(ID_Books) references Books(ID), foreign key(ID_Authors) references Authors(ID));
+mysql> insert into BooksAuthors values(null,"1","7");
+mysql> insert into BooksAuthors values(null,"2","5");
+mysql> insert into BooksAuthors values(null,"3","3");
+mysql> insert into BooksAuthors values(null,"3","4");
+mysql> insert into BooksAuthors values(null,"4","2");
+mysql> insert into BooksAuthors values(null,"5","1");
+mysql> insert into BooksAuthors values(null,"6","1");
+mysql> insert into BooksAuthors values(null,"7","1");
+mysql> insert into BooksAuthors values(null,"9","2");
+mysql> insert into BooksAuthors values(null,"13","2");
+mysql> insert into BooksAuthors values(null,"14","2");
+mysql> insert into BooksAuthors values(null,"17","1");
+mysql> insert into BooksAuthors values(null,"18","1");
+mysql> insert into BooksAuthors values(null,"19","1");
+mysql> insert into BooksAuthors values(null,"16","2");
+mysql> insert into BooksAuthors values(null,"15","2");
+mysql> insert into BooksAuthors values(null,"12","2");
+mysql> insert into BooksAuthors values(null,"11","2");
+mysql> insert into BooksAuthors values(null,"10","2");
+mysql> insert into BooksAuthors values(null,"8","6");
+mysql> insert into BooksAuthors values(null,"20","1");
+
+mysql> # SQL-запрос, который выведет авторов, написавших меньше 7 книг
+
+mysql> select Author from Authors inner join BooksAuthors on BooksAuthors.ID_Authors=Authors.ID group by Authors.Author having 
+count(*) < 7;
+
+mysql> # Также можно было бы решить задание с помощью phpMyAdmin, синтаксис почти такой же
