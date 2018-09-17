@@ -1,5 +1,6 @@
 <?php
 
+// СТРУКТУРА КЛАССОВ
 class Figure // класс ФИГУРЫ
     {
         protected $type = '';
@@ -81,15 +82,51 @@ class Figure // класс ФИГУРЫ
         {
             if (!$this->type) return '0';
             $sBok = $this->h * $this->a * $this->num / 2; // пл-дь боковой пов-ти
-			$sOsn = $this->num * pow($this->a, 2)/tan(180/$this->num); // пл-дь основания
+			$sOsn = $this->num * pow($this->a, 2)/(4*tan(M_PI/$this->num)); // пл-дь основания
             return ($sBok + $sOsn) ; 
         }
         
              
     }
-	
+
+// ГЕНЕРАЦИЯ ОБЪЕКТОВ
+function GenerateFig($type) {
+	global $arr; // для записи объектов в файл
+	switch ($type){
+		case 1: $radius = rand(1,15) + rand(0,9)/10;
+		$figura = new Circle($radius);
+		$arr .= '{"type":"circle","radius":'.$radius.'}'; 
+		break;
+		case 2: $st1 = rand(1,15) + rand(0,9)/10; 
+		$st2 = rand(1,15) + rand(0,9)/10;
+		$figura = new Rectangle($st1,$st2);
+		$arr .= '{"type":"rectangle","st1":'.$st1.',"st2":'.$st2.'}';
+		break;
+		case 3: $num = rand(3,8); // в основании пирамиды не может быть 2 угла, минимум 3, максимум пусть будет 8
+		$a = rand(1,15) + rand(0,9)/10;
+		$apofema = rand(1,15) + rand(0,9)/10;
+		$figura = new Pyramid($num,$a,$apofema);
+		$arr .= '{"type":"pyramid","num":'.$num.',"a":'.$a.',"apofema":'.$apofema.'}';
+		break;
+	}
+	$arr.=',';
+}
+
+$kolFig = rand(4,15); // рандомное количество фигур от 4 до 15
+for ($i=0;$i<$kolFig;$i++){
+	$typeFig = rand(1,3); // задается тип фигуры
+	GenerateFig($typeFig);
+}
+
+// ЗАПИСЬ В ФАЙЛ
+$arr = '['.$arr;
+$arr = substr($arr,0,strlen($arr)-1).']';	
+$fail = fopen("figurki.json", 'w') or die("Не удалось создать файл");
+fwrite($fail, $arr);
+fclose($fail);
+
 // ПОЛУЧЕНИЕ ОБЪЕКТОВ ИЗ ФАЙЛА	
-$path = file_get_contents("figures.json");
+$path = file_get_contents("figurki.json");
 $json = json_decode($path, true);
 for($i=0;$i<count($json);$i++) {
 	switch ($json[$i]['type']) {
@@ -104,6 +141,30 @@ for($i=0;$i<count($json);$i++) {
 			break;
 	}
 	$json[$i]['square'] = $figure->getArea();
-	echo $json[$i]['square'];
-	echo ("-----");
 }
+
+// СОРТИРОВКА ОБЪЕКТОВ ПО УБЫВАНИЮ ПЛОЩАДИ ФИГУР
+function compare_square($a,$b) {
+	if ($a['square'] == $b['square']) {return 0;}
+	return ($a['square'] > $b['square']) ? -1:1;
+}
+usort($json,'compare_square');
+
+// ВЫВОД РЕЗУЛЬТАТА НА ЭКРАН
+echo ("<br/><strong> РЕЗУЛЬТАТ СОРТИРОВКИ: </strong><br/><br/>");
+for($i=0;$i<count($json);$i++){
+	echo ($i+1).". Площадь фигуры: ".$json[$i]['square']."<br/>";
+	switch ($json[$i]['type']) {
+	    case 'circle':
+	        echo "Круг с радиусом = ". $json[$i]['radius']."<br/><br/>";
+			break;
+		case 'rectangle':
+            echo "Прямоугольник со сторонами: ".$json[$i]['st1']." и ".$json[$i]['st2']."<br/><br/>";
+			break;
+		case 'pyramid':
+            echo "Пирамида, в основании правильный ".$json[$i]['num']."-угольник со стороной = ".$json[$i]['a'].", 
+			длина апофемы = ".$json[$i]['apofema']."<br/><br/>";
+			break;
+	}
+}
+?>
